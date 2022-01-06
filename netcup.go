@@ -1,14 +1,14 @@
-package template
+package netcup
 
 import (
-	"github.com/wizardrix/libdns_netcup"
+	netcup "github.com/wizardrix/libdns_netcup"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 )
 
 // Provider lets Caddy read and manipulate DNS records hosted by this DNS provider.
-type Provider struct{ *libdns_netcup.Provider }
+type Provider struct{ *netcup.Provider }
 
 func init() {
 	caddy.RegisterModule(Provider{})
@@ -18,7 +18,7 @@ func init() {
 func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "dns.providers.netcup",
-		New: func() caddy.Module { return &Provider{new(libdns_netcup.Provider)} },
+		New: func() caddy.Module { return &Provider{new(netcup.Provider)} },
 	}
 }
 
@@ -41,33 +41,33 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 //
 // **THIS IS JUST AN EXAMPLE AND NEEDS TO BE CUSTOMIZED.**
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	for d.Next() {
-		if d.NextArg() {
-			p.Provider.APIToken = d.Val()
-		}
-		if d.NextArg() {
-			return d.ArgErr()
-		}
-		for nesting := d.Nesting(); d.NextBlock(nesting); {
-			switch d.Val() {
-			case "api_token":
-				if p.Provider.APIToken != "" {
-					return d.Err("API token already set")
-				}
-				if d.NextArg() {
-					p.Provider.APIToken = d.Val()
-				}
-				if d.NextArg() {
-					return d.ArgErr()
-				}
-			default:
-				return d.Errf("unrecognized subdirective '%s'", d.Val())
-			}
-		}
-	}
-	if p.Provider.APIToken == "" {
-		return d.Err("missing API token")
-	}
+	// for d.Next() {
+	// 	if d.NextArg() {
+	// 		p.Provider.APIToken = d.Val()
+	// 	}
+	// 	if d.NextArg() {
+	// 		return d.ArgErr()
+	// 	}
+	// 	for nesting := d.Nesting(); d.NextBlock(nesting); {
+	// 		switch d.Val() {
+	// 		case "api_token":
+	// 			if p.Provider.APIToken != "" {
+	// 				return d.Err("API token already set")
+	// 			}
+	// 			if d.NextArg() {
+	// 				p.Provider.APIToken = d.Val()
+	// 			}
+	// 			if d.NextArg() {
+	// 				return d.ArgErr()
+	// 			}
+	// 		default:
+	// 			return d.Errf("unrecognized subdirective '%s'", d.Val())
+	// 		}
+	// 	}
+	// }
+	// if p.Provider.APIToken == "" {
+	// 	return d.Err("missing API token")
+	// }
 	return nil
 }
 
