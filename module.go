@@ -1,15 +1,14 @@
 package template
 
 import (
-	"fmt"
+	"github.com/wizardrix/libdns_netcup"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	libdnstemplate "github.com/libdns/template"
 )
 
 // Provider lets Caddy read and manipulate DNS records hosted by this DNS provider.
-type Provider struct{ *libdnstemplate.Provider }
+type Provider struct{ *libdns_netcup.Provider }
 
 func init() {
 	caddy.RegisterModule(Provider{})
@@ -18,16 +17,19 @@ func init() {
 // CaddyModule returns the Caddy module information.
 func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID:  "dns.providers.template",
-		New: func() caddy.Module { return &Provider{new(libdnstemplate.Provider)} },
+		ID:  "dns.providers.netcup",
+		New: func() caddy.Module { return &Provider{new(libdns_netcup.Provider)} },
 	}
 }
 
 // TODO: This is just an example. Useful to allow env variable placeholders; update accordingly.
 // Provision sets up the module. Implements caddy.Provisioner.
 func (p *Provider) Provision(ctx caddy.Context) error {
-	p.Provider.APIToken = caddy.NewReplacer().ReplaceAll(p.Provider.APIToken, "")
-	return fmt.Errorf("TODO: not implemented")
+	replacer := caddy.NewReplacer()
+	p.Provider.CustomerNumber = replacer.ReplaceAll(p.Provider.CustomerNumber, "")
+	p.Provider.APIKey = replacer.ReplaceAll(p.Provider.APIKey, "")
+	p.Provider.APIPassword = replacer.ReplaceAll(p.Provider.APIPassword, "")
+	return nil
 }
 
 // TODO: This is just an example. Update accordingly.
