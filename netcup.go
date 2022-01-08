@@ -22,7 +22,6 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	}
 }
 
-// TODO: This is just an example. Useful to allow env variable placeholders; update accordingly.
 // Provision sets up the module. Implements caddy.Provisioner.
 func (p *Provider) Provision(ctx caddy.Context) error {
 	replacer := caddy.NewReplacer()
@@ -32,42 +31,55 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 	return nil
 }
 
-// TODO: This is just an example. Update accordingly.
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
 //
-// providername [<api_token>] {
-//     api_token <api_token>
+// netcup {
+//     customer_number <customer_number>
+//     api_key <api_key>
+//     api_password <api_password>
 // }
-//
-// **THIS IS JUST AN EXAMPLE AND NEEDS TO BE CUSTOMIZED.**
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	// for d.Next() {
-	// 	if d.NextArg() {
-	// 		p.Provider.APIToken = d.Val()
-	// 	}
-	// 	if d.NextArg() {
-	// 		return d.ArgErr()
-	// 	}
-	// 	for nesting := d.Nesting(); d.NextBlock(nesting); {
-	// 		switch d.Val() {
-	// 		case "api_token":
-	// 			if p.Provider.APIToken != "" {
-	// 				return d.Err("API token already set")
-	// 			}
-	// 			if d.NextArg() {
-	// 				p.Provider.APIToken = d.Val()
-	// 			}
-	// 			if d.NextArg() {
-	// 				return d.ArgErr()
-	// 			}
-	// 		default:
-	// 			return d.Errf("unrecognized subdirective '%s'", d.Val())
-	// 		}
-	// 	}
-	// }
-	// if p.Provider.APIToken == "" {
-	// 	return d.Err("missing API token")
-	// }
+	for d.Next() {
+		if d.NextArg() {
+			return d.ArgErr()
+		}
+		for nesting := d.Nesting(); d.NextBlock(nesting); {
+			switch d.Val() {
+			case "customer_number":
+				if d.NextArg() {
+					p.Provider.CustomerNumber = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "api_key":
+				if d.NextArg() {
+					p.Provider.APIKey = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "api_password":
+				if d.NextArg() {
+					p.Provider.APIPassword = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			default:
+				return d.Errf("unrecognized subdirective '%s'", d.Val())
+			}
+		}
+	}
+	if p.Provider.CustomerNumber == "" {
+		return d.Err("missing customer number")
+	}
+	if p.Provider.APIKey == "" {
+		return d.Err("missing API key")
+	}
+	if p.Provider.APIPassword == "" {
+		return d.Err("missing API password")
+	}
 	return nil
 }
 
