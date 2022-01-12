@@ -1,55 +1,51 @@
-**DEVELOPER INSTRUCTIONS:**
+# [netcup](https://www.netcup.de/) DNS module for Caddy
 
-- Update module name in go.mod
-- Update dependencies to latest versions
-- Update name and year in license
-- Customize configuration and Caddyfile parsing
-- Update godocs / comments (especially provider name and nuances)
-- Update README and remove this section
+**This repository will not be maintained. Please refer to [caddy-dns/netcup](https://github.com/caddy-dns/netcup)**
 
----
-
-\<PROVIDER\> module for Caddy
-===========================
-
-This package contains a DNS provider module for [Caddy](https://github.com/caddyserver/caddy). It can be used to manage DNS records with \<PROVIDER\>.
+This package contains a DNS provider module for [Caddy](https://github.com/caddyserver/caddy). It can be used to manage DNS records with the [netcup DNS API](https://ccp.netcup.net/run/webservice/servers/endpoint.php) using [libdns-netcup](https://github.com/libdns/netcup).
 
 ## Caddy module name
 
 ```
-dns.providers.provider_name
+dns.providers.netcup
 ```
 
 ## Config examples
 
-To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) like so:
+To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) with your netcup credentials ([guide](https://www.netcup-wiki.de/wiki/CCP_API)) like so:
 
 ```json
 {
-	"module": "acme",
-	"challenges": {
-		"dns": {
-			"provider": {
-				"name": "provider_name",
-				"api_token": "YOUR_PROVIDER_API_TOKEN"
-			}
-		}
-	}
+  "module": "acme",
+  "challenges": {
+    "dns": {
+      "provider": {
+        "name": "netcup",
+        "customer_number": "{env.NETCUP_CUSTOMER_NUMBER}",
+        "api_key": "{env.NETCUP_API_KEY}",
+        "api_password": "{env.NETCUP_API_PASSWORD}"
+      }
+    }
+  }
 }
 ```
 
 or with the Caddyfile:
 
 ```
-# globally
-{
-	acme_dns provider_name ...
-}
-```
+your.domain.com {
 
-```
-# one site
-tls {
-	dns provider_name ...
+	...
+
+	tls {
+		dns netcup {
+			customer_number {env.NETCUP_CUSTOMER_NUMBER}
+			api_key {env.NETCUP_API_KEY}
+			api_password {env.NETCUP_API_PASSWORD}
+		}
+	}
+
+	...
+
 }
 ```
